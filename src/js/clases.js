@@ -1,13 +1,17 @@
 class User {
-    constructor (name, lastName, username, password, creditCard, cvc, admin) {
+    constructor (id, name, lastName, username, pass, creditCard, cvc, admin) {
+        this.userId = id;
         this.name = name;
         this.lastName = lastName;
         this.username = username;
-        this.password = password;
+        this.pass = pass;
         this.creditCard = creditCard;
         this.cvc = cvc;
         this.state = "Pendiente"
-        this.admin = admin;
+        if (admin != undefined)
+            this.admin = admin;
+        else
+            this.admin = false;
         this.instancesInUse = [];        
     }
 
@@ -20,7 +24,7 @@ class Instance {
         this.state = state;
         this.rentalCost = rentalCost;
         this.turnOnCost = turnOnCost;
-        this.turnOnInstanceCounter = 1;
+        this.turnOnInstanceCounter = 0;
     }
 
 }

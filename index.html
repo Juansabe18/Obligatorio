@@ -3,10 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Obligatorio</title>
+    <script src="src/js/clases.js"></script>
     <script src="src/js/system.js"></script>
     <script src="src/js/main.js"></script>
+    <link rel="stylesheet" href="src/css/styles.css">
 </head>
 <body>
+
+    <div id="loginDiv">  
+        <h2>Ingrese su usuario y contraseña, de lo contrario Registrese!</h2>
+        <label for="usernameLogin">Ingrese usuario: </label>      
+        <input type="text" id="usernameLogin"> <br> <br>
+        <label for="passLogin">Ingrese contraseña: </label>     
+        <input type="password" id="passLogin">
+        <input type="button" value="Ingresar" id="loginButton">
+        <input type="button" value="Registrarse" id="registerButtonLogin">
+        <p id="pLogin"></p>
+    </div>
+
+    <div id="registerDiv">
+        <h2>Rellene el formulario con los datos</h2>
+        <label for="nameInputRegister">Nombre: </label>    
+        <input type="text" id="nameInputRegister"> <br> <br>
+        <label for="lastNameInputRegister">Apellido: </label>  
+        <input type="text" id="lastNameInputRegister"> <br> <br>
+        <label for="usernameInputRegister">Nombre de usuario: </label>  
+        <input type="text" id="usernameInputRegister"> <br> <br>
+        <label for="passInputRegister">Contraseña: </label>  
+        <input type="text" id="passInputRegister"> <br> <br>
+        <label for="creditCardInputRegister">Número de tarjeta: </label> 
+        <input type="text" id="creditCardInputRegister"> <br> <br>
+        <label for="cvcInputRegister">Código de verificación: </label> 
+        <input type="text" id="cvcInputRegister"> <br> <br>
+        <input type="button" value="Volver a Iniciar sesion" id="backButtonRegister">        
+        <input type="button" value="Registrarse" id="registerButton">      
+        <p id="pRegister"></p>
+    </div>
+
+      
+    <div id="userFooter" class="clearfix cabezal">
+        <img id="logo" src="src/img/footerLogo.png" alt="logo" /> 
+        <ul id="navPrincipal">
+          <li>
+            <a id="rentVirtualMachineA">Alquilar maquina virtual</a>
+          </li>
+          <li>
+            <a id="showAllInstancesUserA">Ver listado de maquinas alquiladas</a>
+          </li>
+          <li>
+            <a id="turnOn/OffInstanceA">Encender/Apagar maquina virtual</a>
+          </li>
+          <li>
+            <a id="rentCostUserA">Ver costo total de alquiler</a>
+          </li>
+          <li>
+            <a id="logoutUser">Salir</a>
+          </li>
+        </ul>       
+    </div>
+
+    <div id="adminFooter" class="clearfix cabezal">
+        <img id="logo" src="src/img/footerLogo.png" alt="logo" /> 
+        <ul id="navPrincipal">
+          <li>
+            <a id="userManagmentA">Gestión de usuarios</a>
+          </li>
+          <li>
+            <a id="virtualMachinesManagmentA">Modificar stock de máquinas virtuales</a>
+          </li>
+          <li>
+            <a id="rentCostAdminA">Ver informe de máquinas virtuales</a>
+          </li>
+          <li>
+            <a id="logoutAdmin">Salir</a>
+          </li>
+        </ul>     
+    </div>
+
+
+    <div id="rentVirtualMachine" style="margin-top: 10px;">
+      <Select id="selectInstanceType" class="rentVirtualMachineComboBox">
+        <option value="default">Seleccione instancia</option>
+        <option value="c7.small">c7.small</option>
+        <option value="c7.medium">c7.medium</option>
+        <option value="c7.large">c7.large</option>
+        <option value="r7.small">r7.small</option>
+        <option value="r7.medium">r7.medium</option>
+        <option value="r7.large">r7.large</option>
+        <option value="i7.medium">i7.medium</option>
+        <option value="i7.large">i7.large</option>
+      </Select>
+
+    <button id="rentVirtualMachineButton">Alquilar</button>
+    <p id="rentVirtualMachineP"></p>
+    </div>
+
+    <div id="userManagment">
+
+        <table>
+            <thead>
+                <th>Nombre de Usuario</th>
+                <th>Estado actual</th>
+                <th>Acciones</th>
+            </thead>
+            <tbody id="usersBodyTable">
+            </tbody>
+        </table>
+        <p id="userManagmentP" class="errorText"></p>
+
+    </div>   
+
+    <div id="virtualMachinesManagment">
+
+      <table>
+        <thead>
+          <th>Instancia</th>
+          <th>Stock actual</th>
+          <th>Instancias siendo utilizadas por usuarios</th>
+          <th>Acciones</th>
+        </thead>
+
+        <tbody id="virtualMachinesManagmentTbodyTable">
+          <td>
+            <Select id="selectStock">
+              <option value="default">Seleccione instancia</option>
+              <option value="c7.small">c7.small</option>
+              <option value="c7.medium">c7.medium</option>
+              <option value="c7.large">c7.large</option>
+              <option value="r7.small">r7.small</option>
+              <option value="r7.medium">r7.medium</option>
+              <option value="r7.large">r7.large</option>
+              <option value="i7.medium">i7.medium</option>
+              <option value="i7.large">i7.large</option>
+            </Select>
+          </td>
+          <td id="actualStock"  class="centerText">
+          </td>
+          <td id="instancesInUseVirtualMachinesManagment" class="centerText">
+          </td>
+          <td>
+            <label for="stockQuantity">Ingrese cantidad: </label>
+            <input type="text" id="stockQuantity">
+            <input type="button" value="Aumentar" id="addStockQuantity">
+            <input type="button" value="Disminuir" id="restStockQuantity">
+          </td>
+        </tbody>
+
+      </table>
+
+      <p id="virtualMachinesManagmentP"></p>
+
+    </div>
+
+    <div id="showAllInstancesUser">
+
+      <table>
+
+        <thead>
+          <th>Instancia</th>
+          <th>Estado</th>
+          <th>Veces Iniciada</th>
+        </thead>
+
+        <tbody id="showAllInstancesUserBodyTable">
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <div id="turnOn/OffInstanceDiv">
+      <table>
+        <thead>
+          <th>Instancia Id</th>
+          <th>Instancia</th>
+          <th>Estado</th>
+          <th>Veces iniciada</th>
+          <th>Acciones</th>
+        </thead>
+
+        <tbody id="turnOn/OffInstanceBodyTable">
+          
+        </tbody>
+
+      </table>
+
+      <p id="turnOn/OffInstanceP"></p>
+    </div>
+
+    <div id="rentCostUserDiv">
+
+      <table>
+        <thead>
+          <th>Id instancia</th>
+          <th>Tipo de instancia</th>
+          <th>Costo por encendido</th>
+          <th>Total de veces encendida</th>
+          <th>Costo total</th>
+        </thead>
+        <tbody id="rentCostUserBodyTable">
+
+        </tbody>
+      </table>
+
+    </div>
+
+    <div id="rentCostAdminDiv">
+
+      <table>
+
+        <thead>
+          <th>Instancia</th>
+          <th>En uso</th>
+          <th>Ganancia</th>
+        </thead>
+
+        <tbody id="rentCostAdminBodyTable"></tbody>
+
+      </table>
+
+      <p id="rentCostAdminP"></p>
+
+    </div>
+
+
+
 </body>
 </html>
