@@ -1,5 +1,6 @@
 let userLogged;
 let system = new System();
+let turnOnOffFilter = false;
 
 window.addEventListener("load", loadListeners);
 
@@ -19,9 +20,12 @@ function loadListeners() {
     document.getElementById("restStockQuantity").addEventListener("click", restStockQuantity);
     document.getElementById("rentVirtualMachineA").addEventListener("click", showRentVirtualMachine);
     document.getElementById("rentVirtualMachineButton").addEventListener("click", rentInstanceToUser);
-    document.getElementById("showAllInstancesUserA").addEventListener("click", showAllInstancesUser);
-    document.getElementById("turnOn/OffInstanceA").addEventListener("click", showTurnOnOffInstance);
+    document.getElementById("showAllInstancesUserA").addEventListener("click", showTurnOnOffInstance);
+    document.getElementById("turnOnOffFilter").addEventListener("click", changeFilterValue);
+    //document.getElementById("turnOn/OffInstanceA").addEventListener("click", showTurnOnOffInstance);
     document.getElementById("rentCostUserA").addEventListener("click", showRentCostUser);
+    document.getElementById("showRentCostUserButton").addEventListener("click", showRentCostUser);
+    document.getElementById("showRentCostUserIndividualInstance").addEventListener("click", showRentCostUserIndividualInstances);
     document.getElementById("rentCostAdminA").addEventListener("click", showRentCostAdmin);
 }
 
@@ -60,12 +64,12 @@ function userValidations(user) {
     }
     
     if (user.lastName == "" || user.lastName.length > 20) {
-        showText.innerHTML = "El apellido no puede estar vacío ni superar los 15 caracteres";  
+        showText.innerHTML = "El apellido no puede estar vacío ni superar los 20 caracteres";  
         return false;
     }
 
     if (user.username == "" || !validateUsername(user.username)) {
-        showText.innerHTML = "El nombre de usuario no puede estar vacío y debe cumplir con los requisitos de tener almenos un simbolo y un numero";
+        showText.innerHTML = "El nombre de usuario no puede estar vacío y debe cumplir con los requisitos de tener al menos un simbolo y un numero";
         return false;    
     }
 
@@ -159,6 +163,7 @@ function login() {
 
 function showLogin() {
     hideEverything();
+    turnOnOffFilter = false;
     let inputsId = ["usernameLogin", "passLogin"];    
     cleanInputs(inputsId);
     document.getElementById("pLogin").innerHTML = "";
@@ -184,10 +189,10 @@ function showAdminMainSeccion() {
 }
 
 function showUserManagment() {    
-    hideEverything();
+    showAdminMainSeccion()  
     document.getElementById("userManagmentP").innerHTML = "";
     document.getElementById("userManagment").style.display = "block";
-    document.getElementById("adminFooter").style.display = "block";
+
     let table = document.getElementById("usersBodyTable");
     table.innerHTML = "";
     let users = system.getUsers();
@@ -203,6 +208,7 @@ function showUserManagment() {
 function showRentVirtualMachine() {
     hideEverything();
     showUserMainSeccion();
+    turnOnOffFilter = false;
     document.getElementById("selectInstanceType").value = "default";
     document.getElementById("rentVirtualMachineP").innerHTML = "";
     document.getElementById("rentVirtualMachine").style.display = "block";
@@ -211,6 +217,7 @@ function showRentVirtualMachine() {
 function showAllInstancesUser() {
     hideEverything();
     showUserMainSeccion();
+    turnOnOffFilter = false;
     let table = document.getElementById("showAllInstancesUserBodyTable");
     document.getElementById("showAllInstancesUser").style.display = "block";
     table.innerHTML = "";
@@ -234,35 +241,29 @@ function showVirtualMachinesManagment() {
     document.getElementById("virtualMachinesManagment").style.display = "block";
 }
 
-function addEventListernerToActivateButtons(buttonsIds) {
+function addEventListernerToActivateButtons(buttonsIds) {    
     for (let i = 0; i<buttonsIds.length; i++) {
-        document.getElementById(`${buttonsIds[i]}Activate`).addEventListener("click", function() {
-            activateUser(document.getElementById(`${buttonsIds[i]}Td`).innerText);
-        })
+        document.getElementById(`${buttonsIds[i]}Activate`).addEventListener("click", activateUser);        
     }
 }
 
 function addEventListernerToBlockButtons(buttonsIds) {
     for (let i = 0; i<buttonsIds.length; i++) {
-        document.getElementById(`${buttonsIds[i]}Block`).addEventListener("click", function() {
-            blockUser(document.getElementById(`${buttonsIds[i]}Td`).innerText);
-        })
+        document.getElementById(`${buttonsIds[i]}Block`).addEventListener("click", blockUser);
+
     }
 }
 
 function addEventListernerToTurnOnButtons(buttonsIds) {
     for (let i = 0; i<buttonsIds.length; i++) {
-        document.getElementById(`${buttonsIds[i]}TurnOn`).addEventListener("click", function() {            
-            turnOnInstance(document.getElementById(`${buttonsIds[i]}Td`).innerText);
-        })
+        document.getElementById(`${buttonsIds[i]}TurnOn`).addEventListener("click", turnOnInstance);
     }
 }
 
 function addEventListernerToTurnOffButtons(buttonsIds) {
     for (let i = 0; i<buttonsIds.length; i++) {
-        document.getElementById(`${buttonsIds[i]}TurnOff`).addEventListener("click", function() {            
-            turnOffInstance(document.getElementById(`${buttonsIds[i]}Td`).innerText);
-        })
+        document.getElementById(`${buttonsIds[i]}TurnOff`).addEventListener("click", turnOffInstance);
+
     }
 }
 
@@ -332,19 +333,77 @@ function showTurnOnOffInstance() {
     showUserMainSeccion();
     document.getElementById("turnOn/OffInstanceDiv").style.display = "block";
     document.getElementById("turnOn/OffInstanceP").innerHTML = "";
+    let buttonValue = document.getElementById("turnOnOffFilter");
     let table = document.getElementById("turnOn/OffInstanceBodyTable");
     table.innerHTML = "";
     let user = system.getUser(userLogged.username);
     let buttonsIds = [];
-    if (user != null && user.instancesInUse.length > 0) {
-        for (let i = 0; i < user.instancesInUse.length; i++) {
-            table.innerHTML += `<td id="${user.instancesInUse[i].instance_id}Td" class="centerText">${user.instancesInUse[i].instance_id}</td><td>${user.instancesInUse[i].type}</td> <td>${user.instancesInUse[i].state}</td> <td class="centerText">${user.instancesInUse[i].turnOnInstanceCounter}</td> <td><input type="button" value="Prender" id="${user.instancesInUse[i].instance_id}TurnOn"><input type="button" value="Apagar" id="${user.instancesInUse[i].instance_id}TurnOff"></td>`;    
-            buttonsIds.push(`${user.instancesInUse[i].instance_id}`);
+    
+    if (!turnOnOffFilter) {
+        buttonValue.value = "Activar filtro por encendido/apagado";
+        if (user != null && user.instancesInUse.length > 0) {
+            for (let i = 0; i < user.instancesInUse.length; i++) {
+                table.innerHTML += `<td id="${user.instancesInUse[i].instance_id}Td" class="centerText">${user.instancesInUse[i].instance_id}</td><td>${user.instancesInUse[i].type}</td> <td>${user.instancesInUse[i].state}</td> <td class="centerText">${user.instancesInUse[i].turnOnInstanceCounter}</td> <td><input type="button" value="Prender" id="${user.instancesInUse[i].instance_id}TurnOn"><input type="button" value="Apagar" id="${user.instancesInUse[i].instance_id}TurnOff"></td>`;    
+                buttonsIds.push(`${user.instancesInUse[i].instance_id}`);
+            }
+            addEventListernerToTurnOnButtons(buttonsIds);
+            addEventListernerToTurnOffButtons(buttonsIds);
         }
-        addEventListernerToTurnOnButtons(buttonsIds);
-        addEventListernerToTurnOffButtons(buttonsIds);
     }
+    else {
+        buttonValue.value = "Desactivar filtro por encendido/apagado";
+        if (user != null && user.instancesInUse.length > 0) {
+            //Recorre las instancias 2 veces, la primera para llenar datos de instancias encendidas y la segunda para instancias apagadas
+            for (let counter = 0; counter < 2; counter++) {                
+                for (let i = 0; i < user.instancesInUse.length; i++) {
+                    if (counter == 0) {
+                        if (user.instancesInUse[i].state == "Encendida") {
+                            table.innerHTML += `<td id="${user.instancesInUse[i].instance_id}Td" class="centerText">${user.instancesInUse[i].instance_id}</td><td>${user.instancesInUse[i].type}</td> <td>${user.instancesInUse[i].state}</td> <td class="centerText">${user.instancesInUse[i].turnOnInstanceCounter}</td> <td><input type="button" value="Prender" id="${user.instancesInUse[i].instance_id}TurnOn"><input type="button" value="Apagar" id="${user.instancesInUse[i].instance_id}TurnOff"></td>`;    
+                            buttonsIds.push(`${user.instancesInUse[i].instance_id}`);
+                        }
+                    }
+                    if (counter == 1) {
+                        if (user.instancesInUse[i].state == "Apagada") {
+                            table.innerHTML += `<td id="${user.instancesInUse[i].instance_id}Td" class="centerText">${user.instancesInUse[i].instance_id}</td><td>${user.instancesInUse[i].type}</td> <td>${user.instancesInUse[i].state}</td> <td class="centerText">${user.instancesInUse[i].turnOnInstanceCounter}</td> <td><input type="button" value="Prender" id="${user.instancesInUse[i].instance_id}TurnOn"><input type="button" value="Apagar" id="${user.instancesInUse[i].instance_id}TurnOff"></td>`;    
+                            buttonsIds.push(`${user.instancesInUse[i].instance_id}`);
+                        }
+                    }
+                }
+            }
+            addEventListernerToTurnOnButtons(buttonsIds);
+            addEventListernerToTurnOffButtons(buttonsIds);
+        }
+    }
+    
+
 }
+
+function changeFilterValue() {
+    if (turnOnOffFilter) {
+        turnOnOffFilter = false;
+    }    
+    else {
+        turnOnOffFilter = true;
+    }
+    showTurnOnOffInstance();
+}
+
+
+
+//Funcion que muestra los gastos de las instancias de manera individual
+ function showRentCostUserIndividualInstances() {
+    hideEverything();
+    showUserMainSeccion();
+    document.getElementById("rentCostUserIndividualInstanceDiv").style.display = "block";
+    let table = document.getElementById("rentCostUserIndividualBodyTable");
+    table.innerHTML = "";
+    let userInstances = system.getInstancesInUseFromUser(userLogged.username);
+    if (userInstances != null) {
+        for (let i = 0; i < userInstances.length; i++) {
+            table.innerHTML += `<td class="centerText">${userInstances[i].instance_id}</td> <td class="centerText">${userInstances[i].type}</td> <td class="centerText">${userInstances[i].turnOnCost}</td> <td class="centerText">${userInstances[i].turnOnInstanceCounter}</td> <td class="centerText">U$S ${calculateTotalCostInstance(userInstances[i])}</td>`;    
+        }
+    }
+} 
 
 function showRentCostUser() {
     hideEverything();
@@ -353,9 +412,24 @@ function showRentCostUser() {
     let table = document.getElementById("rentCostUserBodyTable");
     table.innerHTML = "";
     let userInstances = system.getInstancesInUseFromUser(userLogged.username);
+    let instancesType = ["c7.small", "c7.medium", "c7.large", "r7.small", "r7.medium", "r7.large", "i7.medium", "i7.large"];
+    let totalCostSum;
+    let turnOnInstanceCounter;
+    let turnOnCost;
     if (userInstances != null) {
-        for (let i = 0; i < userInstances.length; i++) {
-            table.innerHTML += `<td class="centerText">${userInstances[i].instance_id}</td> <td class="centerText">${userInstances[i].type}</td> <td class="centerText">${userInstances[i].turnOnCost}</td> <td class="centerText">${userInstances[i].turnOnInstanceCounter}</td> <td class="centerText">U$S ${calculateTotalCostInstance(userInstances[i])}</td>`;    
+        for (let i = 0; i < instancesType.length; i++) {
+            totalCostSum = 0;
+            turnOnInstanceCounter = 0;
+            turnOnCost = 0;
+            for (let j = 0; j < userInstances.length; j++) {
+                if (instancesType[i] == userInstances[j].type) {
+                    totalCostSum += calculateTotalCostInstance(userInstances[j]);
+                    turnOnInstanceCounter += userInstances[j].turnOnInstanceCounter;
+                    turnOnCost = userInstances[j].turnOnCost;
+                }                
+            }
+            if (totalCostSum != 0 && turnOnInstanceCounter != 0 && turnOnCost != 0)
+                table.innerHTML += `<td class="centerText">${instancesType[i]}</td> <td class="centerText">${turnOnCost}</td> <td class="centerText">${turnOnInstanceCounter}</td> <td class="centerText">U$S ${totalCostSum}</td>`;    
         }
     }
 }
@@ -392,7 +466,8 @@ function showRentCostAdmin() {
     }
 }
 
-function turnOnInstance(instanceId) {
+function turnOnInstance() {
+    let instanceId = this.id.substring(0,this.id.length-6);
     let instance = system.getInstanceInUseFromUserById(instanceId, userLogged.username);
     let textToShow = document.getElementById("turnOn/OffInstanceP");
 
@@ -409,7 +484,8 @@ function turnOnInstance(instanceId) {
         textToShow.innerHTML = "Error prendiendo la instancia contactese con un administrador";
 }
 
-function turnOffInstance(instanceId) {
+function turnOffInstance() {
+    let instanceId = this.id.substring(0,this.id.length-7);
     let instance = system.getInstanceInUseFromUserById(instanceId, userLogged.username);
     let textToShow = document.getElementById("turnOn/OffInstanceP");
 
@@ -426,14 +502,18 @@ function turnOffInstance(instanceId) {
         textToShow.innerHTML = "Error apagando la instancia contactese con un administrador";
 }
 
-function activateUser(username) { 
+function activateUser() { 
+    let username = this.id.substring(0,this.id.length-8);
+   
     if (system.activateUser(username))        
         showUserManagment();    
     else
         document.getElementById("userManagmentP").innerHTML = `El usuario ${username} ya esta activado`;        
 }
 
-function blockUser(username) {    
+function blockUser() {    
+    let username = this.id.substring(0,this.id.length-5);
+
     if (system.blockUser(username)) 
         showUserManagment();
     else 
@@ -480,7 +560,7 @@ function validatePass(pass) {
             upperCaseFound = true;
         if (pass.charCodeAt(i)>= 97 && pass.charCodeAt(i) <= 122)
             lowerCaseFound = true;
-        if (!isNaN(numberFound))
+        if (!isNaN(pass.charAt(i)))
             numberFound = true;
     }
 
@@ -491,7 +571,6 @@ function validatePass(pass) {
 }
 
 function validateCreditCard(creditCard) {
-    //TODO: Falta verificacion de ultimos digitos    
     let numbersLength = 0;
     let notNumberFoundCounter = 0;    
 
@@ -505,6 +584,9 @@ function validateCreditCard(creditCard) {
     if (numbersLength != 16  || notNumberFoundCounter != 0 ) {
         return false;
     }
+
+    if (!validateCreditCardWithLuhnAlghoritm(extractMiddleDashFromCreditCard(creditCard)))
+        return false;
 
     return true;
 }
@@ -541,6 +623,11 @@ function calculateTotalCostInstance(instance) {
     return finalCost;
 }
 
+function validateCreditCardWithLuhnAlghoritm(creditCardNumber){
+    let response = algoritmoLuhn(creditCardNumber);
+    return response;
+}
+
 function cleanInputs(inputsIds) {
     if (inputsIds != null && inputsIds != undefined){
         for (let i = 0 ; i < inputsIds.length; i++) {
@@ -549,6 +636,76 @@ function cleanInputs(inputsIds) {
     } 
 }
 
-//todo: Boton de filtrado creo que había investigar
+
+/* --- Algoritmo de Luhn creditos a Mauro Gastón Nacimento Botta y Gustavo Adolfo García Blanco ---  */
+
+function algoritmoLuhn(pNumero) {
+    /*Se estara iterando numero a numero, desde el final del string hasta el primer caracter, se estarán
+      sumando y sustituyendo por duplicado cuando sea par, ya que sería el segundo nro. */
+    let suma = 0;
+    let digitoVerificadorX = Number(pNumero.charAt(pNumero.length - 1));
+    let contador = 0; //para saber cuando estamos en los segundos, lo pares.
+    let haynro = true;
+    let i = pNumero.length - 2; //el penúltimo.
+  
+  
+    //Mientras los numeros sea mayor o igual a 0 se estara tomando cada caracter
+    while (i >= 0 && haynro) {
+      //Obtener el numero
+      let caracter = pNumero.charAt(i);
+      //Valida que el número sea válido
+      if (!isNaN(caracter)) {
+        let num = Number(caracter);
+        //Duplicando cada segundo dígito
+        if (contador % 2 == 0) {
+          num = duplicarPar(num); //porque si es mayor a 9 se deben sumar.
+        }
+        suma += num;
+      } else {
+        haynro = false;
+      }
+      i--;
+      contador++;
+    }
+    let digitoVerificadorValido = checkDigito(suma, digitoVerificadorX);
+    let modulodelasumaValiado = checkModulo(suma, digitoVerificadorX);
+    return digitoVerificadorValido && modulodelasumaValiado;
+  
+  }
+  
+  function duplicarPar(pNum) {
+    pNum = pNum * 2;
+    if (pNum > 9) {
+      /*Si el resultado del multiplicación es mayor a 9 entonces lo descomponemos y sumamos. 
+       Como el numero sera x>=10 && x<=19
+       Entonces es 1+(num % 10) 1 más el resto de dividir entre 10.*/
+      pNum = 1 + (pNum % 10);
+    }
+    return pNum;
+  }
+  
+  function checkDigito(pSuma, pDigito) {
+    /* 1. Calcular la suma de los dígitos (67).
+  2. Multiplicar por 9 (603).
+  3. Tomar el último dígito (3).
+  4. El resultado es el dígito de chequeo.*/
+    let total = 9 * pSuma;
+    let ultimoNro = total % 10
+    return ultimoNro === pDigito;
+  }
+  
+  function checkModulo(pSuma, pDigito) {
+    /*
+    Si el total del módulo 10 es igual a O (si el total termina en cero), entonces el número es válido 
+  de acuerdo con la fórmula Luhn, de lo contrario no es válido.
+    */
+    let total = pSuma + pDigito;
+    let validacionFinal = false;
+    if (total % 10 === 0 && total !== 0) {
+      validacionFinal = true;
+    }
+    return validacionFinal;
+  }
+  
 
 

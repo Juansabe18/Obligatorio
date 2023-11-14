@@ -51,9 +51,9 @@
           <li>
             <a id="showAllInstancesUserA">Ver listado de maquinas alquiladas</a>
           </li>
-          <li>
+<!--           <li>
             <a id="turnOn/OffInstanceA">Encender/Apagar maquina virtual</a>
-          </li>
+          </li> -->
           <li>
             <a id="rentCostUserA">Ver costo total de alquiler</a>
           </li>
@@ -81,18 +81,17 @@
         </ul>     
     </div>
 
-
     <div id="rentVirtualMachine" style="margin-top: 10px;">
       <Select id="selectInstanceType" class="rentVirtualMachineComboBox">
         <option value="default">Seleccione instancia</option>
-        <option value="c7.small">c7.small</option>
-        <option value="c7.medium">c7.medium</option>
-        <option value="c7.large">c7.large</option>
-        <option value="r7.small">r7.small</option>
-        <option value="r7.medium">r7.medium</option>
-        <option value="r7.large">r7.large</option>
-        <option value="i7.medium">i7.medium</option>
-        <option value="i7.large">i7.large</option>
+        <option value="c7.small">c7.small (costo por alquiler: U$S 20 - costo por encendido: USD 2.50)</option>
+        <option value="c7.medium">c7.medium (costo por alquiler: U$S 30 - costo por encendido: USD 3.50)</option>
+        <option value="c7.large">c7.large (costo por alquiler: U$S 50 - costo por encendido: USD 6.00)</option>
+        <option value="r7.small">r7.small (costo por alquiler: U$S 35 - costo por encendido: USD 4.00)</option>
+        <option value="r7.medium">r7.medium (costo por alquiler: U$S 50 - costo por encendido: USD 6.50)</option>
+        <option value="r7.large">r7.large (costo por alquiler: U$S 60 - costo por encendido: USD 7.00)</option>
+        <option value="i7.medium">i7.medium (costo por alquiler: U$S 30 - costo por encendido: USD 3.50)</option>
+        <option value="i7.large">i7.large (costo por alquiler: U$S 50 - costo por encendido: USD 6.50)</option>
       </Select>
 
     <button id="rentVirtualMachineButton">Alquilar</button>
@@ -175,6 +174,7 @@
     </div>
 
     <div id="turnOn/OffInstanceDiv">
+      <input type="button" id="turnOnOffFilter" value="Activar filtro por encendido/apagado" style="margin-top: 1%;">
       <table>
         <thead>
           <th>Instancia Id</th>
@@ -193,7 +193,25 @@
       <p id="turnOn/OffInstanceP"></p>
     </div>
 
-    <div id="rentCostUserDiv">
+    <div id="rentCostUserDiv">      
+      <input type="button" id="showRentCostUserIndividualInstance" value="Mostrar ganancias individuales" style="margin-top: 1%;">
+
+      <table>
+        <thead>         
+          <th>Tipo de instancia</th>
+          <th>Costo por encendido</th>
+          <th>Total de veces encendida</th>
+          <th>Costo total</th>
+        </thead>
+        <tbody id="rentCostUserBodyTable">
+
+        </tbody>
+      </table>
+
+    </div>
+
+    <div id="rentCostUserIndividualInstanceDiv">
+      <input type="button" id="showRentCostUserButton" value="Mostrar ganancias agrupadas">
 
       <table>
         <thead>
@@ -203,7 +221,7 @@
           <th>Total de veces encendida</th>
           <th>Costo total</th>
         </thead>
-        <tbody id="rentCostUserBodyTable">
+        <tbody id="rentCostUserIndividualBodyTable">
 
         </tbody>
       </table>

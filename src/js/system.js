@@ -214,7 +214,6 @@ class System {
         if (userIndex != null) {
             if (this.users[userIndex].state != "Bloqueado") {
                 this.users[userIndex].state = "Bloqueado";
-                //Sacar instancias y ponerlas en availableInstances[]
                 this.deleteInstancesFromUser(username);
                 return true;            
             }
@@ -299,7 +298,7 @@ class System {
 
       if (user != null && user.instancesInUse.length != 0) {
         let instancesInUseLength = user.instancesInUse.length;
-        for (let i = 0; i < instancesInUseLength ; i++) {
+        for (let i = 0; i < instancesInUseLength; i++) {
             user.instancesInUse[0].turnOnInstanceCounter = 0;
             this.availableInstances.push(user.instancesInUse[0]);
             user.instancesInUse.splice(0,1);
