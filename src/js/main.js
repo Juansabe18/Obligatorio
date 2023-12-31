@@ -21,8 +21,7 @@ function loadListeners() {
     document.getElementById("rentVirtualMachineA").addEventListener("click", showRentVirtualMachine);
     document.getElementById("rentVirtualMachineButton").addEventListener("click", rentInstanceToUser);
     document.getElementById("showAllInstancesUserA").addEventListener("click", showTurnOnOffInstance);
-    document.getElementById("turnOnOffFilter").addEventListener("click", changeFilterValue);
-    //document.getElementById("turnOn/OffInstanceA").addEventListener("click", showTurnOnOffInstance);
+    document.getElementById("turnOnOffFilter").addEventListener("click", changeFilterValue);    
     document.getElementById("rentCostUserA").addEventListener("click", showRentCostUser);
     document.getElementById("showRentCostUserButton").addEventListener("click", showRentCostUser);
     document.getElementById("showRentCostUserIndividualInstance").addEventListener("click", showRentCostUserIndividualInstances);
@@ -41,7 +40,8 @@ function addUser() {
     let textToShow =  document.getElementById("pRegister");
 
     if (response == true) {
-        newUser.creditCard = extractMiddleDashFromCreditCard(newUser.creditCard);
+        newUser.creditCard = Number(extractMiddleDashFromCreditCard(newUser.creditCard));
+        newUser.cvc = Number (newUser.cvc);
         if (system.addUser(newUser)) {            
             textToShow.innerHTML = "Usuario registrado con exito";       
             textToShow.classList.remove("errorText");     
@@ -96,7 +96,7 @@ function userValidations(user) {
     return true;
 }
 
-
+//Toma el numero de instancias añadidas al sistema estando las mismas siendo utilizadas o no
 function getInstanceStock() {
 
     let instanceType = document.getElementById("selectStock").value;
@@ -113,6 +113,7 @@ function getInstanceStock() {
     document.getElementById("instancesInUseVirtualMachinesManagment").innerHTML = usersUsingInstanceTypeCounter;
 }
 
+//Añade la instancia seleccionada al usuario logueado
 function rentInstanceToUser() {
     let instanceType = document.getElementById("selectInstanceType").value;
     let response = system.addInstanceToUser(instanceType, userLogged.username);
@@ -214,22 +215,6 @@ function showRentVirtualMachine() {
     document.getElementById("rentVirtualMachine").style.display = "block";
 }
 
-function showAllInstancesUser() {
-    hideEverything();
-    showUserMainSeccion();
-    turnOnOffFilter = false;
-    let table = document.getElementById("showAllInstancesUserBodyTable");
-    document.getElementById("showAllInstancesUser").style.display = "block";
-    table.innerHTML = "";
-    let userInstances = null;
-    userInstances = system.getInstancesInUseFromUser(userLogged.username);    
-    if (userInstances != null) {
-        for (let i = 0; i < userInstances.length; i++) {
-            table.innerHTML += `<td>${userInstances[i].type}</td> <td>${userInstances[i].state}</td> <td class="centerText">${userInstances[i].turnOnInstanceCounter}</td>`;    
-        }
-    }
-}
-
 function showVirtualMachinesManagment() {
     showAdminMainSeccion();    
     let inputToClean = ["stockQuantity"];
@@ -304,7 +289,7 @@ function restStockQuantity() {
             }
 
             if (stockToRest > system.getInstanceStock(instanceType) - system.getInstancesInUseFromUsers(instanceType)) {                
-                textToShow.innerHTML = "No se puede eliminar mas de la cantidad de Instancias en uso"
+                textToShow.innerHTML = "No se puede eliminar mas de la cantidad de Instancias en uso en comparacion con el stock actual"
                 return;
             }
 
